@@ -1,0 +1,62 @@
+﻿@page "/editorial"
+@using PruebaDoubleV.Shared
+@inject HttpClient Http
+@inject NavigationManager Navigate
+
+<h1>Editorial</h1>
+
+<p>Listado de Editoriales cargadas</p>
+
+@if (forecasts == null)
+{
+
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <NavLink class="nav-link" href="CrearEditorial">
+        <span class="oi oi-plus" aria-hidden="true"></span> Nueva Editorial
+    </NavLink>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Sede</th>
+                <th hidden>ID</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Nombres</td>
+                    <td>@forecast.Sede</td>
+                    <td hidden>@forecast.Id</td>
+                    <td>
+                        <NavLink class="nav-link" href="CrearPersona">
+                            <span class="oi oi-pencil" aria-hidden="true"></span> Editar
+                        </NavLink>
+                        <NavLink class="nav-link" @onclick="()=>Borrar(forecast.Id)" href="editorial">
+                            <span class="oi oi-trash" aria-hidden="true"></span> Borrar
+                        </NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<EditorialDTO.EditorialResponse> forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<IEnumerable<EditorialDTO.EditorialResponse>>("Editorial");
+    }
+    protected async Task Borrar(int id)
+    {
+        await Http.DeleteAsync("Editorial/" + Convert.ToInt32(id));
+        Navigate.NavigateTo("editorial", forceLoad: true);
+    }
+}

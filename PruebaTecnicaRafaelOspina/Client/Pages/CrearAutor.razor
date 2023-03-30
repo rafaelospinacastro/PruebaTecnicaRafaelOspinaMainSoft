@@ -1,0 +1,74 @@
+﻿@page "/CrearAutor"
+@using PruebaDoubleV.Shared
+<div class="container">
+    <h3>Crear Autor</h3>
+</div>
+<div class="container contenedor-subtitle">
+    <div class="row">
+        <div class="col-md-6" style="float:right;margin-right:25px;">
+            <label>@mensaje</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3" style="float:right;margin-right:25px;">
+            <label>Nombres</label>
+        </div>
+        <div class="col-md-8">
+            <div class="input-group input-group-sm">
+                <span style="color:red">*</span>
+                <input class="form-control form-control-sm" placeholder="Digite sus nombres" @bind-value="@persona.Nombres" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3" style="float:right;margin-right:25px;">
+            <label>Apellidos</label>
+        </div>
+        <div class="col-md-8">
+            <div class="input-group input-group-sm">
+                <span style="color:red">*</span>
+                <input class="form-control form-control-sm" placeholder="Digite sus apellidos" @bind-value="@persona.Apellidos" />
+            </div>
+        </div>
+    </div>
+    <div class="row"><br /><br /></div>
+    <div class="row">
+        <div class="col-md-3" style="float:right;margin-right:25px;">
+            <button class="btn btn-primary btn-sm" style="float:right" @onclick="Grabar">
+                <span class="fas fa-save"></span> Guardar
+            </button>
+        </div>
+        <div class="col-md-8">
+
+        </div>
+    </div>
+</div>
+@code{
+
+    [Inject] HttpClient Http { get; set; }
+    public AutorDTO.AutorRequest persona = new AutorDTO.AutorRequest();
+    public string mensaje = "";
+    private async Task Grabar()
+    {
+        mensaje = "Se guardo el registro con exito";
+        var devol = await Http.PostAsJsonAsync("Autor", persona);
+        if (devol.IsSuccessStatusCode)
+        {
+            mensaje = "Se guardo el registro con exito";
+        }
+        else
+        {
+            mensaje = "Hubo un problema al guardar";
+        }
+    }
+
+    protected async override void OnParametersSet()
+    {
+
+    }
+
+
+
+}
+
+

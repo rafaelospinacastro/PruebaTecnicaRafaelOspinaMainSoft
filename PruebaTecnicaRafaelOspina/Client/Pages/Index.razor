@@ -1,0 +1,65 @@
+﻿@page "/"
+@inject Class.AppUser loginState
+@inject NavigationManager NavManager
+@using PruebaDoubleV.Shared
+@if (loginState.IsLoggedIn.Equals(false))
+{
+    <h1 style="text-align:center">Iniciar Sesión</h1>
+
+    <div style="text-align:center">
+        <label>Usuario </label><br />
+        <input id="UserName: " name="UserName" type="text" @bind-value="usuario.Nombres" /><br />
+    </div>
+    <div style=" text-align:center">
+        <label>Contraseña </label><br />
+        <input id="Password" name="Password" type="password" @bind-value="usuario.Codigo" /><br />
+    </div>
+    <div style="text-align:center"><br />
+        <button type="submit" @onclick=@HandleLogin class="btn btn-primary">
+            Entrar
+        </button><br />
+    </div>
+    <p style="text-align:center">
+        @correctPassword
+    </p>
+    
+}
+else
+{
+    <h1 style="text-align:center">Inicio de sesión Correcto</h1>
+    <div style="text-align:center">
+        <p> Haz ingresado como @loginState.username!</p>
+        <button type="submit" @onclick=@HandleLogout class="btn btn-primary">
+            Cerrar Sesión
+        </button>
+    </div>
+}
+
+@code {
+    [Inject] HttpClient Http { get; set; }
+    string username = "";
+    string password = "";
+    string correctPassword = "";
+    public UsuarioDTO.DatosUsuario usuario = new UsuarioDTO.DatosUsuario();
+    async Task HandleLogin()
+    {
+        var devol = await Http.PostAsJsonAsync($"Usuarios/ConsultaUsuario", usuario);
+        if (devol.IsSuccessStatusCode)
+        {
+            loginState.SetLogin(true, usuario.Nombres);
+            NavManager.NavigateTo("");
+            //NavManager.NavigateTo("/", forceLoad: true);
+            correctPassword = "";
+        }
+        else
+        {
+            correctPassword = "El usuario no existe o la contraseña es incorrecta";
+        }
+    }
+    void HandleLogout()
+    {
+        username = "";
+        password = "";
+        loginState.SetLogin(false, "");
+    }
+}

@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+@inject Class.AppUser loginState
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="top-row px-4">
+            
+            @if (loginState.IsLoggedIn.Equals(false))
+            {
+                <p></p>
+            }
+            else
+            {
+                <p class="ml-md-auto">Bienvenido @loginState.username!</p>                
+            }
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+

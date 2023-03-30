@@ -1,0 +1,66 @@
+﻿@page "/libros"
+@using PruebaDoubleV.Shared
+@inject HttpClient Http
+@inject NavigationManager Navigate
+<h1>Libros</h1>
+
+<p>Listado de libros cargados</p>
+
+@if (forecasts == null)
+{
+
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <NavLink class="nav-link" href="CrearLibro">
+        <span class="oi oi-plus" aria-hidden="true"></span> Crear Libro
+    </NavLink>
+    <table class="table">
+        <thead>
+            <tr>
+                <th hidden>ID</th>
+                <th>ISBN</th>
+                <th>Numero de Paginas</th>
+                <th>Sinopsis</th>
+                <th>Titulo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.ISBN</td>
+                    <td>@forecast.NPaginas</td>
+                    <td>@forecast.Sinopsis</td>
+                    <td>@forecast.Titulo</td>
+                    <td>
+                        <NavLink class="nav-link">
+                            <span class="oi oi-pencil" aria-hidden="true"></span> Editar
+                        </NavLink>
+                        <NavLink class="nav-link" @onclick="()=>Borrar(forecast.ISBN)" href="libros">
+                            <span class="oi oi-trash" aria-hidden="true"></span> Borrar
+                        </NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<LibroDTO.LibroResponse> forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<IEnumerable<LibroDTO.LibroResponse>>("Libro");
+    }
+
+    protected async Task Borrar(int id)
+    {
+        await Http.DeleteAsync("Libro/" + Convert.ToInt32(id));
+        Navigate.NavigateTo("libros", forceLoad: true);
+    }
+
+}
